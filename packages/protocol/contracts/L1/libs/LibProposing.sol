@@ -6,6 +6,7 @@
 
 pragma solidity ^0.8.9;
 
+import {IProofVerifier} from "../ProofVerifier.sol";
 import "../../libs/LibTxDecoder.sol";
 import "../TkoToken.sol";
 import "./LibUtils.sol";
@@ -17,11 +18,18 @@ library LibProposing {
     using LibUtils for TaikoData.BlockMetadata;
     using LibUtils for TaikoData.State;
 
+    struct Something {
+        // The circuits IDs (size === zkProofsPerBlock)
+        bytes[] proofs;
+        uint16[] circuits;
+    }
+
     event BlockCommitted(
         uint64 commitSlot,
         uint64 commitHeight,
         bytes32 commitHash
     );
+
     event BlockProposed(uint256 indexed id, TaikoData.BlockMetadata meta);
 
     error L1_METADATA_FIELD();
@@ -34,6 +42,8 @@ library LibProposing {
     error L1_SOLO_PROPOSER();
     error L1_INPUT_SIZE();
     error L1_TX_LIST();
+    error L1_SIG_ZKP();
+    error L1_SIG_PROOF_LENGTH();
 
     function commitBlock(
         TaikoData.State storage state,
@@ -78,7 +88,7 @@ library LibProposing {
 
         assert(!LibUtils.isHalted(state));
 
-        if (inputs.length != 2) revert L1_INPUT_SIZE();
+        if (inputs.length != 3) revert L1_INPUT_SIZE();
         TaikoData.BlockMetadata memory meta = abi.decode(
             inputs[0],
             (TaikoData.BlockMetadata)
@@ -112,6 +122,38 @@ library LibProposing {
             // if multiple L2 blocks included in the same L1 block,
             // their block.mixHash fields for randomness will be the same.
             meta.mixHash = bytes32(block.difficulty);
+        }
+
+        {
+            Something memory something = abi.decode(inputs[2], (Something));
+            if (
+                something.proofs.length != config.zkProofsPerBlock ||
+                something.circuits.length != config.zkProofsPerBlock
+            ) revert L1_SIG_PROOF_LENGTH();
+
+            // Verify signature ZKP
+            IProofVerifier proofVerifier = IProofVerifier(
+                resolver.resolve("proof_verifier", false)
+            );
+
+            for (uint256 i = 0; i < config.zkProofsPerBlock; ++i) {
+                if (
+                    !proofVerifier.verifyZKP({
+                        verifierId: string(
+                            abi.encodePacked(
+                                "plonk_verifier_",
+                                i,
+                                "_",
+                                something.circuits[i]
+                            )
+                        ),
+                        zkproof: something.proofs[i],
+                        blockHash: 0x0, // TODO???
+                        prover: msg.sender,
+                        txListHash: meta.txListHash
+                    })
+                ) revert L1_SIG_ZKP();
+            }
         }
 
         uint256 deposit;
