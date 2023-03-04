@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.8.0](https://github.com/taikoxyz/taiko-mono/compare/taiko-mono-v0.7.0...taiko-mono-v0.8.0) (2023-03-04)
+
+
+### Features
+
+* **bridge-ui:** fetch transactions from relayer api ([#13244](https://github.com/taikoxyz/taiko-mono/issues/13244)) ([9732cc0](https://github.com/taikoxyz/taiko-mono/commit/9732cc084ed99196a4cd2ccedf9187af4d289ed6))
+* **protocol:** tokens can only mint once ([#13252](https://github.com/taikoxyz/taiko-mono/issues/13252)) ([72d152b](https://github.com/taikoxyz/taiko-mono/commit/72d152b7d998b9f306a12823df964a2da18687dd))
+
+
+### Bug Fixes
+
+* **protocol:** Wrong calculation when minting ERC20 tokens ([#13250](https://github.com/taikoxyz/taiko-mono/issues/13250)) ([5920b7e](https://github.com/taikoxyz/taiko-mono/commit/5920b7eee377e913c10b5b78384f24712808f179))
+
 ## [0.7.0](https://github.com/taikoxyz/taiko-mono/compare/taiko-mono-v0.6.0...taiko-mono-v0.7.0) (2023-03-01)
 
 

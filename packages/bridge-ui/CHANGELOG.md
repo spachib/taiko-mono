@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/taikoxyz/taiko-mono/compare/bridge-ui-v0.2.0...bridge-ui-v0.3.0) (2023-03-04)
+
+
+### Features
+
+* **bridge-ui:** fetch transactions from relayer api ([#13244](https://github.com/taikoxyz/taiko-mono/issues/13244)) ([9732cc0](https://github.com/taikoxyz/taiko-mono/commit/9732cc084ed99196a4cd2ccedf9187af4d289ed6))
+
 ## [0.2.0](https://github.com/taikoxyz/taiko-mono/compare/bridge-ui-v0.1.2...bridge-ui-v0.2.0) (2023-03-01)
 
 
